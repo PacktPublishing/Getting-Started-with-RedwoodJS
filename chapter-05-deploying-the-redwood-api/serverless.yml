@@ -1,0 +1,44 @@
+service: app
+plugins:
+  - serverless-dotenv-plugin
+
+custom:
+  dotenv:
+    include:
+      - # List the environment variables you want to include from your .env file here.
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-2
+    cors: true
+    payload: '1.0'
+  stackTags:
+    source: serverless
+    name: Redwood Lambda API with HTTP API Gateway
+  tags:
+    name: Redwood Lambda API with HTTP API Gateway
+
+package:
+  individually: true
+
+functions:
+  graphql:
+    description: graphql function deployed on AWS Lambda
+    package:
+      artifact: api/dist/zipball/graphql.zip
+    memorySize: 1024
+    timeout: 25
+    tags:
+      endpoint: /.netlify/functions/graphql
+    # Uncomment this section to add environment variables either from the Serverless dotenv plugin or using Serverless params
+    # environment:
+    #   YOUR_FIRST_ENV_VARIABLE: ${env:YOUR_FIRST_ENV_VARIABLE}
+    handler: graphql.handler
+    events:
+      - httpApi:
+          path: /.netlify/functions/graphql
+          method: GET
+      - httpApi:
+          path: /.netlify/functions/graphql
+          method: POST
